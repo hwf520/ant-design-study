@@ -1,18 +1,17 @@
 /*
- * @Author: hwf - 1798274010@qq.com 
- * @Date: 2020-07-30 15:16:51 
+ * @Author: hwf - 1798274010@qq.com
+ * @Date: 2020-07-30 15:16:51
  * @Last Modified by: hwf
- * @Last Modified time: 2020-07-30 23:19:25
+ * @Last Modified time: 2020-07-31 00:03:53
  */
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
-import { PlusOutlined,DeleteOutlined,EditOutlined } from '@ant-design/icons';
-import { Button,message } from 'antd';
+import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, message } from 'antd';
 import { connect } from 'umi';
 import CreateForm from '@/components/modals/CreateForm';
 import UpdateForm from '@/components/modals/UpdateForm';
-
 
 // 函数组件
 export const Index = (props) => {
@@ -21,8 +20,8 @@ export const Index = (props) => {
   const [updateModalVisible, handleModalUpdateVisible] = useState(false);
   const [editItem, setEditItem] = useState({
     initialValues: {},
-    labelCol:{},
-    wrapperCol:{}
+    labelCol: {},
+    wrapperCol: {},
   });
 
   const openEdit = (row) => {
@@ -42,63 +41,70 @@ export const Index = (props) => {
 
     handleModalUpdateVisible(true);
   };
-  
-  const addAdmin = (values) =>{
-      props.dispatch({
-         type:'systemList/add',
-         payload:{
-             ...values
-        }
-      }).then(res=>{
-          if(res.code===200){
-              message.success(res.msg);
-              handleModalCreateVisible(false);
-          }
+
+  const addAdmin = (values) => {
+    props
+      .dispatch({
+        type: 'systemList/add',
+        payload: {
+          ...values,
+        },
       })
-     
-  }
-  
-  // 进行编辑操作
-  const editAdmin = (params) =>{
-    props.dispatch({
-        type:'systemList/edit',
-        payload:{
-            ...params
-       }
-     }).then(res=>{
-        if(res.code===200){
-            message.success(res.msg);
-            handleModalUpdateVisible(false);
+      .then((res) => {
+        if (res.code === 200) {
+          message.success(res.msg);
+          handleModalCreateVisible(false);
         }
-    })
-  }
+      });
+  };
+
+  // 进行编辑操作
+  const editAdmin = (params) => {
+    props
+      .dispatch({
+        type: 'systemList/edit',
+        payload: {
+          ...params,
+        },
+      })
+      .then((res) => {
+        if (res.code === 200) {
+          message.success(res.msg);
+          handleModalUpdateVisible(false);
+        }
+      });
+  };
   const columns = [
     {
-        title: '节点ID',
-        dataIndex: 'treeId',
-        rules: [
-          {
-            required: true,
-            message: '树节点为必填项',
-          },
-        ],
-      },
-      {
-        title: '名称',
-        dataIndex: 'treeName',
-        sorter: true,
-      },
+      title: '节点ID',
+      dataIndex: 'treeId',
+      rules: [
+        {
+          required: true,
+          message: '树节点为必填项',
+        },
+      ],
+    },
+    {
+      title: '名称',
+      dataIndex: 'treeName',
+      sorter: true,
+    },
     {
       title: '操作',
       valueType: 'option',
       dataIndex: 'id',
       render: (text, row) => {
         return (
-           <>
-           <Button type="primary" icon={<EditOutlined />} onClick={() => openEdit(row)}>编辑</Button>
+          <>
+            <Button type="primary" icon={<EditOutlined />} onClick={() => openEdit(row)}>
+              编辑
+            </Button>
             <span>&nbsp;&nbsp;</span>
-            <Button danger type="primary" icon={<DeleteOutlined />}>删除</Button>
-           </>
+            <Button danger type="primary" icon={<DeleteOutlined />}>
+              删除
+            </Button>
+          </>
         );
       },
     },
@@ -112,7 +118,7 @@ export const Index = (props) => {
         rowKey="key"
         // request={params => queryList(params)}  //可以考虑在这里进行请求发送
         toolBarRender={() => [
-        // toolBarRender={(action, { selectedRows }) => [
+          // toolBarRender={(action, { selectedRows }) => [
           <Button type="primary" onClick={() => handleModalCreateVisible(true)}>
             <PlusOutlined /> 新增
           </Button>,
@@ -129,14 +135,13 @@ export const Index = (props) => {
         <ProTable
           onSubmit={async (value) => {
             // 进行调用添加接口
-            addAdmin(value)
+            addAdmin(value);
           }}
           rowKey="id"
           type="form"
           columns={columns}
           rowSelection={{}}
-        
-          form = {{
+          form={{
             labelCol: { span: 6 },
             wrapperCol: { span: 16 },
           }}
@@ -150,10 +155,7 @@ export const Index = (props) => {
         <ProTable
           form={editItem}
           onSubmit={async (values) => {
-      
-            editAdmin(values)
-            // console.log(value);
-           
+            editAdmin(values);
           }}
           rowKey="id"
           type="form"
@@ -166,6 +168,6 @@ export const Index = (props) => {
 };
 
 export default connect(({ systemList, loading }) => ({
-    systemList,
-    loading: loading.models.systemList,
-  }))(Index);
+  systemList,
+  loading: loading.models.systemList,
+}))(Index);
