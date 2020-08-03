@@ -2,7 +2,7 @@
  * @Author: hwf - 1798274010@qq.com
  * @Date: 2020-07-30 15:16:51
  * @Last Modified by: hwf
- * @Last Modified time: 2020-08-03 08:53:12
+ * @Last Modified time: 2020-08-03 11:50:24
  */
 import React, { useState, useRef } from 'react';
 import { PageHeaderWrapper, FooterToolbar } from '@ant-design/pro-layout';
@@ -17,6 +17,8 @@ import { Button, message, Modal, Input } from 'antd';
 import { connect } from 'umi';
 import CreateForm from '@/components/modals/CreateForm';
 import UpdateForm from '@/components/modals/UpdateForm';
+
+import { queryList } from './service';
 
 const { confirm } = Modal; // 引入confirm
 // 函数组件
@@ -70,6 +72,8 @@ export const Index = (props) => {
         if (res.code === 200) {
           message.success(res.msg);
           handleModalCreateVisible(false);
+          // actionRef.current.reload(); // 进行表格数据刷新
+          actionRef.current.reloadAndRest(); // 进行重置所有项并刷新
         }
       });
   };
@@ -87,6 +91,7 @@ export const Index = (props) => {
         if (res.code === 200) {
           message.success(res.msg);
           handleModalUpdateVisible(false);
+          actionRef.current.reload(); // 进行表格数据刷新
         }
       });
   };
@@ -108,7 +113,7 @@ export const Index = (props) => {
           .then((res) => {
             if (res.code === 200) {
               message.success(res.msg);
-              // 这里应该还需要发一个请求，进行表格数据刷新
+              actionRef.current.reload(); // 进行表格数据刷新
             }
           });
       },
@@ -117,7 +122,7 @@ export const Index = (props) => {
       },
     });
   };
-  // 进行查询
+  // 进行分页查询
   // const queryList = (values)=>{
   //       props.dispatch({
   //           type: 'systemList/list',
@@ -141,11 +146,11 @@ export const Index = (props) => {
     {
       title: '名称',
       dataIndex: 'treeName',
-      sorter: true,
+      //   sorter: true,
       renderFormItem: (_, { type, defaultRender, ...rest }) => {
         if (type === 'form') {
           if (updateModalVisible === true) {
-            return <Input {...rest} placeholder="请输入" disabled />;
+            return <Input {...rest} placeholder="请输入" disabled />; // 编辑时进行锁定，不能更改
           }
         }
         return defaultRender(_);
@@ -182,18 +187,41 @@ export const Index = (props) => {
         headerTitle="用户数据列表"
         actionRef={actionRef}
         rowKey="treeId"
-        // request={(params, sorter, filter) => queryList({ ...params, sorter, filter })}  //可以考虑在这里进行请求发送
+        request={(params) =>
+          queryList({
+            treeId: '', // 添加了额外的参数
+            ...params, // 进行分页参数添加
+          }).then((res) => {
+            const result = {
+              data: res.result.data.slice(1, 10), // 返回来的数据列表
+              total: res.result.data.length, // 返回来的总条数
+              success: true,
+              pageSize: 10, // 设置为当前的页数
+              current: 1, // 设置为当前的页数
+            };
+            return result;
+          })
+        } // 可以考虑在这里进行请求发送
         toolBarRender={() => [
           // toolBarRender={(action, { selectedRows }) => [
           <Button type="primary" onClick={() => handleModalCreateVisible(true)}>
             <PlusOutlined /> 新增
           </Button>,
         ]}
-        dataSource={props.systemList.list}
+        onSubmit={(params) => {
+          // 可以自行构造相应的参数,这里默认方法请求的是list列表接口,如果调用的是其它接口,
+          // 可能需要自己进行函数定义,采用dva,dispath发起请求
+          console.log('进行条件查询', params);
+        }}
+        // dataSource={props.systemList.list} // 采用了model层的数据
         loading={props.loadingAll} // 显示正在加载图标
         columns={columns}
         rowSelection={{
           onChange: (_, selectedRows) => setSelectedRows(selectedRows), // 进行存储选中了哪些行
+        }}
+        // 分页
+        pagination={{
+          hideOnSinglePage: true, // 数据少于一页时,隐藏分页
         }}
       />
       {selectedRowsState?.length > 0 && (

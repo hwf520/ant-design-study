@@ -2,7 +2,7 @@
  * @Author: hwf - 1798274010@qq.com
  * @Date: 2020-07-30 15:39:23
  * @Last Modified by: hwf
- * @Last Modified time: 2020-07-31 16:29:57
+ * @Last Modified time: 2020-08-03 10:10:13
  */
 import { queryList, add } from './service';
 
@@ -33,19 +33,19 @@ const Model = {
     },
   },
   // 用于订阅一个数据源
-  subscriptions: {
-    setup({ dispatch, history }) {
-      return history.listen(({ pathname }) => {
-        if (pathname === '/systemManage') {
-          dispatch({
-            type: 'list',
-            payload: {
-              treeId: '',
-            },
-          });
-        }
-      });
-    },
-  },
+  // subscriptions: {
+  //   setup({ dispatch, history }) {
+  //     return history.listen(({ pathname }) => {
+  //       if (pathname === '/systemManage') {
+  //         dispatch({
+  //           type: 'list',
+  //           payload: {
+  //             treeId: '',
+  //           },
+  //         });
+  //       }
+  //     });
+  //   },
+  // },
 };
 export default Model;
