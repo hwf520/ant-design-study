@@ -91,6 +91,19 @@ export default defineConfig({
               ],
             },
             {
+              name: '富文本',
+              icon: 'user',
+              path: '/makeDowns',
+              routes: [
+                {
+                  name: '富文本',
+                  icon: 'smile',
+                  path: '/makeDowns',
+                  component: './makeDowns',
+                },
+              ],
+            },
+            {
               component: './404',
             },
           ],
